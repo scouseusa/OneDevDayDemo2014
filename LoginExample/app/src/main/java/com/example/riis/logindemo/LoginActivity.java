@@ -3,19 +3,15 @@ package com.example.riis.logindemo;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,42 +25,42 @@ import android.widget.TextView;
 import com.example.riis.logindemo.model.LoginModel;
 import com.example.riis.logindemo.model.LoginValidationResult;
 import com.example.riis.logindemo.model.interfaces.LoginActivityListener;
-import com.example.riis.logindemo.model.task.UserLoginTask;
+import com.google.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import roboguice.activity.RoboActivity;
+import roboguice.inject.ContentView;
+import roboguice.inject.InjectView;
 
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, LoginActivityListener
+@ContentView(R.layout.activity_login)
+public class LoginActivity extends RoboActivity implements LoaderCallbacks<Cursor>, LoginActivityListener
 {
-
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
-
     // UI references.
+    @InjectView(R.id.email)
     private AutoCompleteTextView mEmailView;
+    @InjectView(R.id.password)
     private EditText mPasswordView;
+    @InjectView(R.id.login_progress)
     private View mProgressView;
+    @InjectView(R.id.login_form)
     private View mLoginFormView;
-    private LoginModel loginModel;
+    @Inject
+    LoginModel loginModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
-        mPasswordView = (EditText) findViewById(R.id.password);
-        loginModel = new LoginModel();
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
@@ -88,9 +84,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
                 attemptLogin();
             }
         });
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
     }
 
     private void populateAutoComplete()
@@ -152,7 +145,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
     {
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
-        loginModel.attemptLogin(this, email, password);
         LoginValidationResult result = loginModel.attemptLogin(this, email, password);
         if (result.getEmailError() != null)
         {
@@ -174,7 +166,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
 
     public void processLoginResult(boolean result)
     {
-        mAuthTask = null;
         showProgress(false);
 
         if (result)
@@ -186,7 +177,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
             mPasswordView.setError(getString(R.string.error_incorrect_password));
             mPasswordView.requestFocus();
         }
-
     }
 
     @Override

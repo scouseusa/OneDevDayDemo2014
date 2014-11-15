@@ -1,14 +1,19 @@
 package com.example.riis.logindemo.model.task;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.example.riis.logindemo.R;
 import com.example.riis.logindemo.model.interfaces.LoginActivityListener;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import roboguice.util.RoboAsyncTask;
 
 /**
  * Created by scouseusa on 11/13/14.
  */
-public class UserLoginTask extends AsyncTask<Void, Void, Boolean>
+public class UserLoginTask extends RoboAsyncTask<Boolean>
 {
     LoginActivityListener loginActivityListener;
 
@@ -21,10 +26,16 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean>
     };
 
 
-    private final String mEmail;
-    private final String mPassword;
+    private String mEmail;
+    private String mPassword;
 
-    public UserLoginTask(String email, String password)
+    @Inject
+    public UserLoginTask(Context context)
+    {
+        super(context);
+    }
+
+    public void setCredentials(String email, String password)
     {
         mEmail = email;
         mPassword = password;
@@ -36,18 +47,10 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean>
     }
 
     @Override
-    protected Boolean doInBackground(Void... params)
+    public Boolean call() throws InterruptedException
     {
         // TODO: attempt authentication against a network service.
-
-        try
-        {
-            // Simulate network access.
-            Thread.sleep(2000);
-        } catch (InterruptedException e)
-        {
-            return false;
-        }
+        Thread.sleep(2000);
 
         for (String credential : DUMMY_CREDENTIALS)
         {
@@ -64,13 +67,13 @@ public class UserLoginTask extends AsyncTask<Void, Void, Boolean>
     }
 
     @Override
-    protected void onPostExecute(final Boolean success)
+    protected void onSuccess(final Boolean success)
     {
         loginActivityListener.processLoginResult(success);
     }
 
     @Override
-    protected void onCancelled()
+    protected void onException(Exception e)
     {
         loginActivityListener.processLoginResult(false);
     }

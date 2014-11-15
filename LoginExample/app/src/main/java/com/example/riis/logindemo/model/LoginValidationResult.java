@@ -1,8 +1,11 @@
 package com.example.riis.logindemo.model;
 
+import com.google.inject.Singleton;
+
 /**
  * Created by scouseusa on 11/13/14.
  */
+@Singleton
 public class LoginValidationResult
 {
     String emailError;
