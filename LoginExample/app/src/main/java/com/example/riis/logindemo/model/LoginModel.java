@@ -18,22 +18,27 @@ public class LoginModel
     {
         LoginValidationResult loginValidationResult = new LoginValidationResult();
 
+        boolean validationFailed = false;
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password))
         {
             loginValidationResult.setPasswordError(activity.getString(R.string.error_invalid_password));
+            validationFailed = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email))
         {
             loginValidationResult.setEmailError(activity.getString(R.string.error_field_required));
+            validationFailed = true;
         }
         else if (!isEmailValid(email))
         {
             loginValidationResult.setEmailError(activity.getString(R.string.error_invalid_email));
+            validationFailed = true;
         }
-        else
+
+        if (!validationFailed)
         {
             UserLoginTask loginTask = new UserLoginTask(email, password);
             loginTask.setLoginActivityListener(activity);

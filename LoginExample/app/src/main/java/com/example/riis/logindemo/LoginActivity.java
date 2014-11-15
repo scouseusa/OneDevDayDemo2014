@@ -152,7 +152,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
     {
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
-        loginModel.attemptLogin(this, email, password);
         LoginValidationResult result = loginModel.attemptLogin(this, email, password);
         if (result.getEmailError() != null)
         {
